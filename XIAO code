@@ -1,0 +1,291 @@
+#include <Wire.h>
+#include "MAX30105.h"
+#include "heartRate.h"
+#include <ArduinoBLE.h>
+
+MAX30105 particleSensor;
+
+// BLE Service and Characteristics
+BLEService bioService("19B10000-E8F2-537E-4F6C-D104768A1214");
+BLEIntCharacteristic gsrChar("19B10002-E8F2-537E-4F6C-D104768A1214", BLERead | BLENotify);
+BLEIntCharacteristic heartChar("19B10003-E8F2-537E-4F6C-D104768A1214", BLERead | BLENotify);
+BLEFloatCharacteristic tempChar("19B10004-E8F2-537E-4F6C-D104768A1214", BLERead | BLENotify);
+BLEFloatCharacteristic hrvChar("19B10005-E8F2-537E-4F6C-D104768A1214", BLERead | BLENotify);
+BLEIntCharacteristic spo2Char("19B10006-E8F2-537E-4F6C-D104768A1214", BLERead | BLENotify);
+
+//  status
+bool deviceConnected = false;
+
+// Heart Rate Variables
+const byte RATE_SIZE = 20;
+byte rates[RATE_SIZE];
+byte rateSpot = 0;
+long lastBeat = 0;
+float beatsPerMinute = 0;
+int beatAvg = 0;
+float smoothedBPM = 0.0;
+
+//  Variables for hrv
+const int HRV_BUFFER_SIZE = 10;
+unsigned long rrIntervals[HRV_BUFFER_SIZE];
+int rrIndex = 0;
+unsigned long lastRRTime = 0;
+float hrv = 0.0;
+
+// gsr Variables
+const int GSR_PIN = A0;
+float gsrValue = 0.0;
+const int GSR_SAMPLES = 10;
+float gsrReadings[GSR_SAMPLES] = {0};
+int gsrIndex = 0;
+
+// SpO2 Variables
+float spo2 = 98.0;
+float redACValue = 0, irACValue = 0;
+float redDCValue = 0, irDCValue = 0;
+int spo2SampleCount = 0;
+
+// temp Variables
+float temperature = 0.0;
+unsigned long lastTempRead = 0;
+const unsigned long TEMP_READ_INTERVAL = 2000;
+
+void setup() {
+  Serial.begin(9600);
+  delay(1000);
+  Serial.println("Cognitive Ring Thingy Starting");
+  
+
+  Serial.print("Initializing MAX30102... ");
+  if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) {
+    Serial.println("FAILED!");
+    Serial.println("Check wiring ");
+    while (1);
+  }
+  Serial.println("OK");
+  
+  // Configure MAX30102
+  particleSensor.setup();
+  particleSensor.setPulseAmplitudeRed(0x0A);
+  particleSensor.setPulseAmplitudeGreen(0);
+  particleSensor.enableDIETEMPRDY();
+  
+  // Initialize BLE
+  Serial.print("Initializing BLE... ");
+  if (!BLE.begin()) {
+    Serial.println("FAILED!");
+    while (1);
+  }
+  Serial.println("OK");
+  
+  BLE.setLocalName("GSR_HEART");
+  BLE.setAdvertisedService(bioService);
+  
+  bioService.addCharacteristic(gsrChar);
+  bioService.addCharacteristic(heartChar);
+  bioService.addCharacteristic(tempChar);
+  bioService.addCharacteristic(hrvChar);
+  bioService.addCharacteristic(spo2Char);
+  
+  BLE.addService(bioService);
+  
+  gsrChar.writeValue(0);
+  heartChar.writeValue(0);
+  tempChar.writeValue(0.0);
+  hrvChar.writeValue(0.0);
+  spo2Char.writeValue(0);
+  
+  BLE.advertise();
+  
+  Serial.println("BLE advertising as 'GSR_HEART'");
+  Serial.println("Place finger on MAX30102 sensor");
+  Serial.println("==============================");
+}
+
+void loop() {
+  // Check BLE connection
+  BLEDevice central = BLE.central();
+  
+  if (central) {
+    if (!deviceConnected) {
+      deviceConnected = true;
+      Serial.println("✓ BLE Connected!");
+    }
+    
+    // Keep connection alive
+    BLE.poll();
+  } else {
+    if (deviceConnected) {
+      deviceConnected = false;
+      Serial.println("✗ BLE Disconnected");
+    }
+  }
+  
+  // Read MAX30102 sensor
+  long irValue = particleSensor.getIR();
+  uint32_t redValue = particleSensor.getRed();
+  
+  // Heart Rate Detection
+  if (checkForBeat(irValue)) {
+    long delta = millis() - lastBeat;
+    lastBeat = millis();
+    beatsPerMinute = 60 / (delta / 1000.0);
+    
+    if (beatsPerMinute < 255 && beatsPerMinute > 20) {
+      // Store in buffer
+      rates[rateSpot++] = (byte)beatsPerMinute;
+      rateSpot %= RATE_SIZE;
+      
+      // Calculate average
+      beatAvg = 0;
+      for (byte x = 0; x < RATE_SIZE; x++) {
+        beatAvg += rates[x];
+      }
+      beatAvg /= RATE_SIZE;
+      
+      // Smooth BPM
+      if (smoothedBPM == 0.0) {
+        smoothedBPM = beatAvg;
+      } else {
+        smoothedBPM = (smoothedBPM * 0.85) + (beatAvg * 0.15);
+      }
+      
+      // HRV Calculation
+      if (lastRRTime > 0) {
+        unsigned long rrInterval = millis() - lastRRTime;
+        if (rrInterval > 400 && rrInterval < 1500) {
+          rrIntervals[rrIndex] = rrInterval;
+          rrIndex = (rrIndex + 1) % HRV_BUFFER_SIZE;
+          calculateHRV();
+        }
+      }
+      lastRRTime = millis();
+    }
+  }
+  
+  // SpO2 Calculation
+  if (irValue > 50000 && redValue > 1000) {
+    calculateSpO2(irValue, redValue);
+  }
+  
+  // GSR Reading
+  updateGSR();
+  
+  // Temperature Reading (every 2 seconds)
+  if (millis() - lastTempRead >= TEMP_READ_INTERVAL) {
+    temperature = particleSensor.readTemperature();
+    lastTempRead = millis();
+  }
+  
+  // Send BLE Data if connected (with error handling)
+  if (deviceConnected && central) {
+    // Only send valid data
+    int gsrInt = constrain((int)gsrValue, 0, 1023);
+    int heartInt = constrain((int)smoothedBPM, 0, 255);
+    int spo2Int = constrain((int)spo2, 85, 100);
+    
+    gsrChar.writeValue(gsrInt);
+    heartChar.writeValue(heartInt);
+    tempChar.writeValue(temperature);
+    hrvChar.writeValue(hrv);
+    spo2Char.writeValue(spo2Int);
+    
+    // Small delay to prevent overwhelming BLE
+    delay(10);
+  }
+  
+  // Serial Output (every 1 second)
+  static unsigned long lastPrint = 0;
+  if (millis() - lastPrint >= 1000) {
+    Serial.print("HR: ");
+    Serial.print((int)smoothedBPM);
+    Serial.print(" bpm | GSR: ");
+    Serial.print((int)gsrValue);
+    Serial.print(" | Temp: ");
+    Serial.print(temperature, 1);
+    Serial.print("°C | HRV: ");
+    Serial.print(hrv, 0);
+    Serial.print(" | SpO2: ");
+    Serial.print((int)spo2);
+    Serial.print("% | Signal: ");
+    Serial.print(irValue > 50000 ? "GOOD" : "POOR");
+    
+    if (deviceConnected) {
+      Serial.print(" | BLE: ✓");
+    }
+    
+    Serial.println();
+    lastPrint = millis();
+  }
+}
+
+void calculateHRV() {
+  if (rrIndex < 3) return;
+  
+  float sumSquaredDiffs = 0;
+  int validPairs = 0;
+  
+  for (int i = 1; i < HRV_BUFFER_SIZE; i++) {
+    if (rrIntervals[i] > 0 && rrIntervals[i-1] > 0) {
+      long diff = rrIntervals[i] - rrIntervals[i-1];
+      sumSquaredDiffs += (diff * diff);
+      validPairs++;
+    }
+  }
+  
+  if (validPairs > 1) {
+    float rmssd = sqrt(sumSquaredDiffs / validPairs);
+    rmssd = rmssd * 0.3;
+    rmssd = constrain(rmssd, 15, 80);
+    hrv = (hrv * 0.9) + (rmssd * 0.1);
+  }
+}
+
+void calculateSpO2(long irValue, uint32_t redValue) {
+  if (spo2SampleCount == 0) {
+    redDCValue = redValue;
+    irDCValue = irValue;
+    spo2 = 98.0;
+  }
+  
+  redACValue = abs(redValue - redDCValue);
+  irACValue = abs(irValue - irDCValue);
+  
+  redDCValue = (redDCValue * 0.95) + (redValue * 0.05);
+  irDCValue = (irDCValue * 0.95) + (irValue * 0.05);
+  
+  spo2SampleCount++;
+  
+  if (spo2SampleCount > 100 && irACValue > 0 && redACValue > 0) {
+    float ratio = (redACValue / redDCValue) / (irACValue / irDCValue);
+    
+    float calculatedSpO2;
+    if (ratio < 0.5) {
+      calculatedSpO2 = 100;
+    } else if (ratio < 1.0) {
+      calculatedSpO2 = 100 - 5 * ratio;
+    } else if (ratio < 2.0) {
+      calculatedSpO2 = 100 - 25 * ratio;
+    } else {
+      calculatedSpO2 = 85;
+    }
+    
+    calculatedSpO2 = constrain(calculatedSpO2, 85, 100);
+    spo2 = (spo2 * 0.9) + (calculatedSpO2 * 0.1);
+  }
+}
+
+void updateGSR() {
+  float rawGSR = analogRead(GSR_PIN);
+  gsrValue = rawGSR;
+  
+  gsrReadings[gsrIndex] = gsrValue;
+  gsrIndex = (gsrIndex + 1) % GSR_SAMPLES;
+  
+  float sum = 0;
+  for (int i = 0; i < GSR_SAMPLES; i++) {
+    sum += gsrReadings[i];
+  }
+  gsrValue = sum / GSR_SAMPLES;
+}
+

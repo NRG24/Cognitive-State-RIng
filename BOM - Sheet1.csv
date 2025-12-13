@@ -1,0 +1,26 @@
+Item,Description,Quantity,Unit Price,Total Price,URL,FINAL TOTAL,Notes
+XIAO nRF52840 Sense ,Breakout MCU,1,$25.99,$25.99,https://www.amazon.com/Seeed-Studio-XIAO-nRF52840Sense/dp/B09T94SZ8K?th=1    ,27.81,Amazon ultimately has the best price for the XIAO
+Grove GSR Sensor,Breakout GSR Sensor,1,10.9,10.9,https://www.digikey.com/en/products/detail/seeed-technology-co-ltd/101020052/5488086,20.31,REVISED: Digikey has the best price for this gsr sensor
+Max30102,Heart rate sensor breakout,1,6.99,6.99,https://www.amazon.com/AEDIKO-MAX30102-Detection-Concentration-Compatible/dp/B09LQDW27N/ref=sr_1_3?crid=3V7QVBCL7UC6E&dib=eyJ2IjoiMSJ9._TXFjZL4VWYe95BgL0jF85Kuxj82lwSib3VT1tz1k2XK1D-HpJguxhDuD5-nxEJBoW4BHD0vb5BMgpiKHQ22lb6iFzFjxtgs_G3gAwWJhVpFJfg2FRa18yXvrJCM6kFbV7ffAIC-_wvuNE51hB6wwlxskDeZz8QBlAP0Vl1ZrhnZqPkDQ2u0Y3HkO4YBzJ8Q-tAjpe77otCDvTwg9aiM9eFsJWwm8gXbN9KVyCtCsLc.8xvSxKiHZGP23n2ROeUFgkQa-1LHS1NgUlBRvMB1lsU&dib_tag=se&keywords=max30102&qid=1765512261&sprefix=max30102%2Caps%2C201&sr=8-3,14.96,I can't and wont switch this. Amazon here has the best price and also there are many counterfeits of these sensors but I know this exact one works well based off research.
+Aypzuke 10cm+20cm 240pc,Jumper Cables,1,1.95,1.95,https://www.digikey.com/en/products/detail/adafruit-industries-llc/1954/6827087?gclsrc=aw.ds&gad_source=1&gad_campaignid=20232005509&gbraid=0AAAAADrbLli3Zre4ddlozLmGmpiwyJ41o&gclid=Cj0KCQiAuvTJBhCwARIsAL6DemjGCJx07q9WwdjozNrLmqDzyvxh82vbj95la6wNk_aXEqV8P2UdnukaAjeDEALw_wcB,9.57,Reduced price by 10 by switching to digikey
+Remote Finger Sensor For,Electrodes,1,32.4,32.4,https://bio-medical.com/remote-finger-sensor-for-gsr2.html?srsltid=AfmBOorTFnGrFccukOft83iFl9Ocpok2z4PKX8FPScJJ7IezdpDLKTYXEOE,44.9,Best price here and it has the proper dimensions
+USB_C_Receptacle_USB2.0_16P,USBC Port J1,2,0.78,1.56,https://www.digikey.com/en/products/detail/gct/USB4105-GF-A-060/14559043?gclsrc=aw.ds&gad_source=1&gad_campaignid=17336967819&gbraid=0AAAAADrbLlid1x_cCbRT2qtap71lpHPOY&gclid=Cj0KCQiA9OnJBhD-ARIsAPV51xMl5sgzSZIxUtNny96FxysI81wMNIk8v0hZK4voecSAOeAsZDjmHqAaAiYIEALw_wcB,10.73,From here down I got the best price or only price possible
+4.7uf Capacitor,Cap C6,2,0.12,0.24,https://www.mouser.com/ProductDetail/TAIYO-YUDEN/LMK212BJ475KG-T?qs=sGAEpiMZZMsh%252B1woXyUXj7c1PCWacDCM6mxxZTi3ixU%3D,8.93,
+0.1uF Capacitor,"Cap C3, C_GSR1",4,0.11,0.44,https://www.mouser.com/ProductDetail/581-06036C104JAT2A,9.06,
+AKZYTUE 3.7V 40mAh 301020 Lipo Battery,Battery,2,7.29,14.58,https://www.amazon.com/AKZYTUE-Battery-Rechargeable-Lithium-Connector/dp/B07TWHGHW4/ref=sr_1_4?crid=1G5XEMWYKIUSV&dib=eyJ2IjoiMSJ9.DPceT9YAzPUFdSQpRfL50gPUPZUn1zSnrrS9VdLMQcJDZF64_Iq_sN8akR917DUdMEF3T-LshW270kgW6t1d1Me9ZfFwXcSd-_ajCcTwa6wO4zr7pXtHmyh4gSmq8WoYopUYvouEGk8Ju2-OIXDdAFc30XwyP2hk_fJVdRoUZ1qjS8JZ88jzBYL5Q2fsRbnBp4Y98c8ZCwGX8u5H550kWFmHgLcY2YIJpZbq22HdWoevzvOb2a-iHiol0XjmHRI8zICghNB1WKEp9McRgBEroxChhesdiTUhBvAVb71ozCU.ThcNgHwmyVxt6aAcg-vByft_-nhCheOwG1MfS3UJH8c&dib_tag=se&keywords=ultra+micro+lipo+battery+under+40+mah&qid=1765514292&s=electronics&sprefix=ultra+micro+lipo+battery+unde%2Celectronics%2C273&sr=1-4,23.08,
+MDBT50Q-P1MV2,PCB MCU ,2,6,12,https://www.digikey.com/en/products/detail/raytac/MDBT50Q-P1MV2/13677599?gclsrc=aw.ds&gad_source=1&gad_campaignid=20228387720&gbraid=0AAAAADrbLlgvrrNRSRqrZ2v18Ed6vkLcL&gclid=CjwKCAiAxc_JBhA2EiwAFVs7XA93m4hipuMQA5mzPgOVDKRmU5Xd7B3-J2M8_kpqQstgVkBpI0hTfBoCOQQQAvD_BwE,34.24,
+KYOCERA AVX KAM15CT70J226MT,Cap c1 and c2,2,0.46,0.92,https://www.mouser.com/ProductDetail/KYOCERA-AVX/KAM15CT70J226MT?qs=Tc%252BHE9vUsnt72L0VWwenIA%3D%3D,9.63,
+Samsung Electro-Mechanics CL03A105MQ3CSWC,MCU CAPS ,18,0.065,1.17,https://www.mouser.com/ProductDetail/Samsung-Electro-Mechanics/CL03A105MQ3CSWC?qs=xZ%2FP%252Ba9zWqbtAeKgSYF%252BnA%3D%3D,9.99,
+36-5019TR-ND,Test points,4,0.37,1.48,https://www.digikey.com/en/products/detail/keystone-electronics/5019/3907344?gclsrc=aw.ds&gad_source=1&gad_campaignid=20228387720&gbraid=0AAAAADrbLli06gdYcS_giEfRUUOq7Z6rM&gclid=Cj0KCQiA9OnJBhD-ARIsAPV51xMLBpOfH9v2XCh9VgapR9ctHA97Aol0x-kmYwgTeEIpyybJVgod_XEaArbLEALw_wcB,9.3,
+Draloric TNPU06034K70AZEN00,"resistors r1,r2",4,2.21,8.84,https://www.mouser.com/ProductDetail/71-TNPU06034K70AZEN0,18.01,
+Panasonic ERA-3APB303V,resistor r3,2,0.24,0.48,https://www.mouser.com/ProductDetail/667-ERA-3APB303V,9.06,
+Bourns CR0603-FX-5101ELF,"Resistor r4,r5",4,0.1,0.4,https://www.mouser.com/ProductDetail/652-CR0603FX-5101ELF,8.98,
+Vishay / Beyschlag MCT06030C2203FP500,R_GSR resistor,2,0.1,0.2,https://www.mouser.com/ProductDetail/594-MCT06030C2203FP5,,Cart combined w/ item below
+Panasonic ERA-3AED104V,R_PROTECT,2,0.1,0.2,https://www.mouser.com/ProductDetail/667-ERA-3AED104V,8.98,
+579-MCP1700T1802E/TT,LDO,2,0.51,1.02,https://www.mouser.com/ProductDetail/Microchip-Technology/MCP1700T-1802E-TT?qs=YUl711QUJY0TiDgzmNmFrg%3D%3D&srsltid=AfmBOoo4NOugID2AfiKyjX21ScDvdK7d90P9R9YKNp1bwGscPZ7niDOC,9.64,
+579-MCP73831T-2ACIOT,charger,2,0.76,1.52,https://www.mouser.com/ProductDetail/Microchip-Technology/MCP73831T-2ACI-OT?qs=yUQqVecv4qvbBQBGbHx0Mw%3D%3D,10.18,
+,,,,,,,
+PCB,,5,,,,50.52,
+,,,,,TOTAL:,347.88,
+,,,,,,,
+,,,,, ,,
